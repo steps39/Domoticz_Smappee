@@ -1,3 +1,5 @@
+Wiki Page here - http://www.domoticz.com/wiki/Smappee
+
     1 Introduction
     2 Installing smappee
         2.1 Installing Lua Libraries
@@ -46,29 +48,29 @@ In order to create this file you need to edit the suggested file below with your
 
 Create your customisation file:
 
-sudo nano /etc/profile.d/DomoticzData.sh
+ sudo nano /etc/profile.d/DomoticzData.sh
 
-#!/bin/bash
+ #!/bin/bash
  
-# Variables to avoid having to set local system information in individual automation scripts
+ # Variables to avoid having to set local system information in individual automation scripts
  
-#I can't get the next line to work during start-up so have gone to 127 instead
-#export DomoticzIP=$(hostname -I|sed 's/[ ]*$//')
-export DomoticzIP="127.0.0.1"
-export DomoticzPort="8080"
-export DomoticzUsername=""                # Can be left blank if you are not using security 
-export DomoticzPassword=""
-export TempFileDir="/var/tmp/"            # If you use dtgbot then just add the four lines
-export SmappeeClientSecret="yNb3c47PfW"   # Request a client_secret by sending an email to support(AT)smappee.com
-export SmappeeClientID="YourName"         # Request a client_id by sending an email to support(AT)smappee.com
-export SmappeeUsername="username"         # Your Smappee username
-export SmappeePassword="password"         # Your Smappee password
-export SmappeeHousehold="Household1"      # Domoticz Household Energy Name
-export SmappeeSolar="Solar1"              # Domoticz Solar Energy Name
+ #I can't get the next line to work during start-up so have gone to 127 instead
+ #export DomoticzIP=$(hostname -I|sed 's/[ ]*$//')
+ export DomoticzIP="127.0.0.1"
+ export DomoticzPort="8080"
+ export DomoticzUsername=""                # Can be left blank if you are not using security 
+ export DomoticzPassword=""
+ export TempFileDir="/var/tmp/"            # If you use dtgbot then just add the four lines
+ export SmappeeClientSecret="xyxydfslsd"   # Request a client_secret by sending an email to support(AT)smappee.com
+ export SmappeeClientID="YourName"         # Request a client_id by sending an email to support(AT)smappee.com
+ export SmappeeUsername="username"         # Your Smappee username
+ export SmappeePassword="password"         # Your Smappee password
+ export SmappeeHousehold="Household1"      # Domoticz Household Energy Name
+ export SmappeeSolar="Solar1"              # Domoticz Solar Energy Name
 
 And set it to be executable:
 
-sudo chmod +x /etc/profile.d/DomoticzData.sh
+ sudo chmod +x /etc/profile.d/DomoticzData.sh
 
 This single file avoids you having to customise the Lua program.
 Setting Up Domoticz for smappee.lua
@@ -82,14 +84,14 @@ Installing Smappee Program
 
 The smappee program is now on github, so the program is installed using git, along with a bash script, which is made executable and then added to cron so that data is collected from Smappee every 5 minutes and transferred into Domoticz:
 
-cd ~
-# This will create the domoticz_smappee directory
-git clone https://github.com/steps39/domoticz_smappee.git
-cd domoticz_smappee
-# Make sure the script is executable
-sudo chmod +x smappee.sh
-# Make the program run every 5 minutes
-sudo crontab -e
+ cd ~
+ # This will create the domoticz_smappee directory
+ git clone https://github.com/steps39/domoticz_smappee.git
+ cd domoticz_smappee
+ # Make sure the script is executable
+ sudo chmod +x smappee.sh
+ # Make the program run every 5 minutes
+ sudo crontab -e
 
 Add this single line to cron:
 
@@ -98,6 +100,7 @@ Add this single line to cron:
 Then save this (ctrl o) and exit (ctrl x).
 
 Assuming all the steps have been completed then smappee.lua is now running once every 5 minutes.
+
 Checking Functioning
 
 If smappee.lua is running properly, then smappee.log will have been created and data will be uploaded to Domoticz.
