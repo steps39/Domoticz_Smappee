@@ -142,6 +142,8 @@ DomoticzUsername = domoticzdata("DomoticzUsername")            -- Domoticz usern
 DomoticzPassword = domoticzdata("DomoticzPassword")            -- Domoticz password
 DomoticzIP = domoticzdata("DomoticzIP")
 DomoticzPort = domoticzdata("DomoticzPort")
+SmappeeHousehold = domoticzdata("SmappeeHousehold")
+SmappeeSolar = domoticzdata("SmappeeSolar")
 
 -- Load necessary Lua libraries
 http = require "socket.http";
@@ -173,18 +175,18 @@ function get_energy_level(DeviceName)
   Power = tonumber(string.match (record["Usage"], "%d*%.?%d+"))
   LastUpdate = record["LastUpdate"]
   DeviceName = record["Name"]
-  return DeviceName, Energy, Power, LastUpdate;
+  return idx, Energy, Power, LastUpdate;
 end
 
 function energy(DeviceName)
   local response = ""
-  DeviceName, Energy, Power, LastUpdate = get_energy_level(DeviceName)
+  DeviceIdx, Energy, Power, LastUpdate = get_energy_level(DeviceName)
   if Energy == -999 then
     print_to_log(DeviceName..' does not exist')
     return 1, DeviceName..' does not exist'
   end
   print_to_log(DeviceName .. ' Cumulative energy consumption is ' .. Energy .. 'Kwh, Current Power is '..Power.. 'watts')
-  return status, Energy, Power;
+  return status, Energy, Power, DeviceIdx;
 end
 
 function smappee_process_authentication(responseToDecode, NameSmappeeAccessToken, NameSmappeeRefreshToken, NameSmappeeExpiresAt)
@@ -289,6 +291,10 @@ else
     print_to_log('Smappee Service Location: '..smappee_service_location)
     -- Read in time last read in seconds and add 1 second to avoid picking up previous data
     STidx, smappee_start_time=retrieve_Domoticz_variable('SmappeeTimeStamp')
+    -- When first set up need to avoid retrieving too much data, so set last measurement as 400 second ago 
+    if smappee_start_time == 1 then
+      smappee_start_time = os.time() - 400
+    end
     smappee_start_time=tonumber(smappee_start_time) + 1
     print_to_log('Previous Time Stamp '..smappee_start_time)
     -- Get UTC time in seconds
@@ -320,8 +326,8 @@ else
         print_to_log('Length consumptions '..smappee_number_consumptions)
         if smappee_number_consumptions > 0 then
           -- Get old readings from Domoticz
-          status, HouseholdEnergy, HouseholdPower = energy('Household1')
-          status, SolarEnergy, SolarPower = energy('Solar1')
+          status, HouseholdEnergy, HouseholdPower, HouseholdIdx = energy(SmappeeHousehold)
+          status, SolarEnergy, SolarPower, SolarIdx = energy(SmappeeSolar)
           -- Energies returned in kWh from Domoticz so convert to Wh
           HouseholdEnergy = HouseholdEnergy * 1000
           SolarEnergy = SolarEnergy * 1000
@@ -351,14 +357,14 @@ else
             -- Sum of 5 minutes in Wh so average power is 60/5 x
             HouseholdPower = smappee_consumption * 12
             print_to_log('Household: '..HouseholdPower..':'..HouseholdEnergy)
-            t = server_url.."/json.htm?type=command&param=udevice&idx=468&nvalue=0&svalue="..tostring(HouseholdPower)..";"..tostring(HouseholdEnergy)
+            t = server_url.."/json.htm?type=command&param=udevice&idx="..HouseholdIdx.."&nvalue=0&svalue="..tostring(HouseholdPower)..";"..tostring(HouseholdEnergy)
             print_to_log ("JSON request <"..t..">");
             jresponse, status = http.request(t)
             -- Only send back a 0 solar power value if previous solar power was not 0
             if not (SolarPower == 0 and smappee_solar == 0)  then
               SolarPower = smappee_solar * 12
               print_to_log('Solar: '..SolarPower..':'..SolarEnergy)
-              t = server_url.."/json.htm?type=command&param=udevice&idx=469&nvalue=0&svalue="..tostring(SolarPower)..";"..tostring(SolarEnergy)
+              t = server_url.."/json.htm?type=command&param=udevice&idx="..SolarIdx.."&nvalue=0&svalue="..tostring(SolarPower)..";"..tostring(SolarEnergy)
               print_to_log ("JSON request <"..t..">");
               jresponse, status = http.request(t)
             end
