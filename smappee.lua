@@ -228,7 +228,7 @@ function smappee_authenticate(AuthenticateType, refresh_token, NameSmappeeAccess
     end
   until (status == 200) or (attempt>5)
   if status ~= 200 then
-    if Refresh then
+    if AuthenticateType == "Refresh" then
       print_to_log('Refresh authentication request not answered')
       -- Try to get a new authtentication
       return smappee_authenticate("New", refresh_token, NameSmappeeAccessToken, NameSmappeeRefreshToken, NameSmappeeExpiresAt)
