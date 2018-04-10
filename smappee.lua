@@ -153,7 +153,11 @@ ltn12 = require('ltn12')
 JSON = require "JSON";
 
 SmappeeURL = "https://app1pub.smappee.net/dev/v1/"
-server_url = "http://"..DomoticzIP..":"..DomoticzPort
+if DomoticzUsername ~= nil then
+   server_url = "http://"..DomoticzUser..":"..DomoticzPassword.."@"..DomoticzIP..":"..DomoticzPort
+else
+   server_url = "http://"..DomoticzIP..":"..DomoticzPort
+end 
 
 NameSmappeeAccessToken = 'SmappeeAccessToken'
 NameSmappeeRefreshToken = 'SmappeeRefreshToken'
