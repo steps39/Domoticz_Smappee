@@ -154,7 +154,7 @@ JSON = require "JSON";
 
 SmappeeURL = "https://app1pub.smappee.net/dev/v1/"
 if DomoticzUsername ~= nil then
-   server_url = "http://"..DomoticzUser..":"..DomoticzPassword.."@"..DomoticzIP..":"..DomoticzPort
+   server_url = "http://"..DomoticzUsername..":"..DomoticzPassword.."@"..DomoticzIP..":"..DomoticzPort
 else
    server_url = "http://"..DomoticzIP..":"..DomoticzPort
 end 
